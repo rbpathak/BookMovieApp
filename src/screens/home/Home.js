@@ -1,312 +1,311 @@
-import React, { useState, useEffect } from "react";
-import { Link, BrowserRouter as Router } from "react-router-dom";
-import moment from "moment";
-import Header from "../../common/header/Header";
-import "./Home.css";
-import {
-  ImageList,
-  ImageListItem,
-  ImageListItemBar,
-  Card,
-  CardContent,
-  Typography,
-  FormControl,
-  Button,
-  TextField,
-  InputLabel,
-  Select,
-  MenuItem,
-  Checkbox,
-  ListItemText,
-} from "@material-ui/core";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
+import React, { Component } from 'react';
+import './Home.css';
+import Header from '../../common/header/Header';
+import { withStyles } from '@material-ui/core/styles';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import FormControl from '@material-ui/core/FormControl';
+import Typography from '@material-ui/core/Typography';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Checkbox from '@material-ui/core/Checkbox';
+import ListItemText from '@material-ui/core/ListItemText';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
 
-const customStylesTextArea = {
-  margin: "10px 0 10px",
-};
 
-const styles = (theme) => ({
-  typo: {
-    color: theme.palette.primary.light,
-    margin: theme.spacing(),
-  },
-});
+class Home extends Component {
 
-function Home(props) {
-  const [genres, set_genres] = useState([]);
-  const [genre_list, set_genre_List] = useState([]);
-  const [artists, set_artists] = useState([]);
-  const [artist_list, set_artist_List] = useState([]);
-  const [movie_name, set_movie_Name] = useState("");
-  const [movies_list, set_movies_List] = useState([]);
-  const [released_movies, set_released_movies] = useState([]);
-  const [start_date, set_start_date] = useState([]);
-  const [end_date, set_end_date] = useState([]);
-
-  const { classes } = props;
-
-  async function loadMovieData() {
-    const input = await fetch(props.baseUrl + "/movies");
-    const data = await input.json();
-    set_movies_List(data.movies);
-    set_released_movies(data.movies);
-  }
-
-  async function loadGenres() {
-    const input = await fetch(props.baseUrl + "/genres");
-    const data = await input.json();
-    set_genre_List(data.genres);
-  }
-
-  async function loadArtists() {
-    const input = await fetch(props.baseUrl + "/artists");
-    const data = await input.json();
-    const g = data.artists.map((artist) => ({
-      name: artist.first_name + " " + artist.last_name,
-      id: artist.id,
-    }));
-    set_artist_List(g);
-  }
-
-  useEffect(() => {
-    loadMovieData();
-    loadGenres();
-    loadArtists();
-  }, []);
-
-  const onMovieSelect = (e) => {
-    set_movie_Name(e.target.value);
-    console.log(e.target.name + " : " + e.target.value);
-  };
-
-  const onGenreSelect = (e) => {
-    set_genres(e.target.value);
-    console.log(e.target.name + " : " + e.target.value);
-  };
-
-  const onArtistSelect = (e) => {
-    set_artists(e.target.value);
-    console.log(e.target.name + " : " + e.target.value);
-  };
-
-  const onStartDateSelect = (e) => {
-    set_start_date(e.target.value);
-    console.log(e.target.name + " : " + e.target.value);
-  };
-
-  const onEndDateSelect = (e) => {
-    set_end_date(e.target.value);
-    console.log(e.target.name + " : " + e.target.value);
-  };
-
-  const onApplyFilter = () => {
-    let filterData = {
-      title: movie_name,
-      genreList: genres,
-      artistList: artists,
-      releasedatestart: start_date,
-      releasedateend: end_date,
-    };
-    let dataFilterList = released_movies.filter((movie) => {
-      let dataFilter = {};
-      if (filterData.title) {
-        if (
-          `${movie.title}`
-            .toLowerCase()
-            .includes(`${filterData.title}`.toLowerCase())
-        ) {
-          dataFilter.titleStatus = true;
-        } else {
-          dataFilter.titleStatus = false;
+    constructor() {
+        super();
+        this.state = {
+            movieName : "",
+            upcomingMovies : [],
+            releasedMovies : [],
+            genres : [],
+            artists : [],
+            genresList : [],
+            artistsList : [],
+            releaseDateStart : "",
+            releaseDateEnd : ""
         }
-      }
-      if (filterData.genreList && filterData.genreList.length > 0) {
-        movie.genres.map((genre) => {
-          if (filterData.genreList.indexOf(genre) > -1) {
-            dataFilter.genreStatus = true;
-          }
-        });
-        if (!dataFilter.genreStatus) {
-          dataFilter.genreStatus = false;
-        }
-      }
-      if (filterData.artistList && filterData.artistList.length > 0) {
-        console.log("releasdatastart status :" + filterData.artistList);
-        movie.artists &&
-          movie.artists.map((artist) => {
-            const name = artist.first_name + " " + artist.last_name;
-            if (filterData.artistList.indexOf(name) > -1) {
-              dataFilter.artistStatus = true;
+    }
+
+
+    movieNameChangeHandler = event => {
+        this.setState({ movieName : event.target.value });
+    }
+
+    genreSelectHandler = event => {
+        this.setState({ genres : event.target.value });
+    }
+
+    artistSelectHandler = event => {
+        this.setState({ artists : event.target.value });
+    }
+
+    releaseDateStartHandler = event => {
+        this.setState({ releaseDateStart : event.target.value });
+    }
+
+    releaseDateEndHandler = event => {
+        this.setState({ releaseDateEnd : event.target.value });
+    }
+
+    movieClickHandler = (movieId) => {
+        this.props.history.push('/movie/' + movieId);
+    }
+
+    
+    componentWillMount() {
+        let data = null;
+        let xhr = new XMLHttpRequest();
+        let that = this;
+        xhr.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({
+                    upcomingMovies : JSON.parse(this.responseText).movies
+                });
             }
-          });
-        if (!dataFilter.artistStatus) {
-          dataFilter.artistStatus = false;
-        }
-      }
-      let endDate = new Date();
-      if (
-        filterData.releasedateend &&
-        typeof filterData.releasedateend === typeof ""
-      ) {
-        endDate = new Date(filterData.releasedateend);
-      }
-      if (
-        filterData.releasedatestart &&
-        typeof filterData.releasedatestart === typeof ""
-      ) {
-        const startDate = new Date(filterData.releasedatestart);
-        const filmDate = new Date(movie.release_date);
-        if (filmDate >= startDate && filmDate <= endDate) {
-          dataFilter.releaseDateStatus = true;
-        } else {
-          dataFilter.releaseDateStatus = false;
-        }
-      }
-      let status = true;
-      for (let item in dataFilter) {
-        if (!dataFilter[item]) {
-          status = false;
-          break;
-        }
-      }
-      return status;
-    });
-    set_movies_List(dataFilterList);
-  };
+        });
 
-  return (
-    <>
-      <Header baseUrl={props.baseUrl}></Header>
-      <header className="head">Upcoming Movies</header>
-      <ImageList rowHeight={250} cols={6}>
-        <div className="grid_scroll" style={{ width: "100%" }}>
-          {released_movies.map((movie) => (
-            <ImageListItem className="tiles_scroll" key={movie.id}>
-              <img src={movie.poster_url} alt={movie.title} />
-              <ImageListItemBar title={movie.title} />
-            </ImageListItem>
-          ))}
-        </div>
-      </ImageList>
-      <div className="container" style={{ width: "100%" }}>
-        <div className="col1">
-          <ImageList rowHeight={350} cols={4}>
-            {movies_list.map((movie) => (
-              <ImageListItem className="tiles" key={movie.id}>
-                <Link to={"/movie/" + movie.id}>
-                  <img src={movie.poster_url} alt={movie.title} />
-                </Link>
-                <ImageListItemBar
-                  title={movie.title}
-                  subtitle={
-                    "Release Date:" +
-                    moment(movie.release_date).format("ddd MMM DD YYYY")
-                  }
-                />
-              </ImageListItem>
-            ))}
-          </ImageList>
-        </div>
-        <div className="col2">
-          <Card>
-            <CardContent>
-              <Typography className={classes.typo} component="div" variant="h6">
-                FIND MOVIES BY:
-              </Typography>
-              <form className="form">
-                <FormControl>
-                  <TextField
-                    style={customStylesTextArea}
-                    label="Movie Name"
-                    name="movieName"
-                    onChange={onMovieSelect}
-                  />
-                </FormControl>
-                <FormControl variant="standard">
-                  <InputLabel id="genres">Genres</InputLabel>
-                  <Select
-                    labelId="genres"
-                    id="genres-select"
-                    name="genre"
-                    value={genres}
-                    label="Genres"
-                    onChange={onGenreSelect}
-                    multiple
-                    renderValue={(selected) => selected.join(", ")}
-                  >
-                    {genre_list.map((g) => (
-                      <MenuItem key={g.id} value={g.genre}>
-                        <Checkbox checked={genres.indexOf(g.genre) > -1} />
-                        <ListItemText primary={g.genre} />
-                      </MenuItem>
+        xhr.open("GET", this.props.baseUrl + "movies?status=PUBLISHED");
+        xhr.setRequestHeader("Cache-Control", "no-cache");
+        xhr.send(data);
+
+        // Get released movies
+        let dataReleased = null;
+        let xhrReleased = new XMLHttpRequest();
+        xhrReleased.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({
+                    releasedMovies : JSON.parse(this.responseText).movies
+                });
+            }
+        });
+
+        xhrReleased.open("GET", this.props.baseUrl + "movies?status=RELEASED");
+        xhrReleased.setRequestHeader("Cache-Control", "no-cache");
+        xhrReleased.send(dataReleased);
+
+        // Get filters
+        let dataGenres = null;
+        let xhrGenres = new XMLHttpRequest();
+        xhrGenres.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({
+                    genresList : JSON.parse(this.responseText).genres
+                });
+            }
+        });
+
+        xhrGenres.open("GET", this.props.baseUrl + "genres");
+        xhrGenres.setRequestHeader("Cache-Control", "no-cache");
+        xhrGenres.send(dataGenres);
+
+        // Get artists
+        let dataArtists = null;
+        let xhrArtists = new XMLHttpRequest();
+        xhrArtists.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({
+                    artistsList : JSON.parse(this.responseText).artists
+                });
+            }
+        });
+
+        xhrArtists.open("GET", this.props.baseUrl + "artists");
+        xhrArtists.setRequestHeader("Cache-Control", "no-cache");
+        xhrArtists.send(dataArtists);
+    }
+
+    filterApplyHandler = () => {
+        let queryString = "?status=RELEASED";
+        if (this.state.movieName !== "") {
+            queryString += "&title=" + this.state.movieName;
+        }
+        if (this.state.genres.length > 0) {
+            queryString += "&genres=" + this.state.genres.toString();
+        }
+        if (this.state.artists.length > 0) {
+            queryString += "&artists=" + this.state.artists.toString();
+        }
+        if (this.state.releaseDateStart !== "") {
+            queryString += "&start_date=" + this.state.releaseDateStart;
+        }
+        if (this.state.releaseDateEnd !== "") {
+            queryString += "&end_date=" + this.state.releaseDateEnd;
+        }
+
+        let that = this;
+        let dataFilter = null;
+        let xhrFilter = new XMLHttpRequest();
+        xhrFilter.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({
+                    releasedMovies : JSON.parse(this.responseText).movies
+                });
+            }
+        });
+
+        xhrFilter.open("GET", this.props.baseUrl + "movies" + encodeURI(queryString));
+        xhrFilter.setRequestHeader("Cache-Control", "no-cache");
+        xhrFilter.send(dataFilter);
+    }
+
+    render() {
+        const { classes } = this.props;
+        return (
+            <div>
+                <Header baseUrl={this.props.baseUrl} />
+
+                <div className={classes.upcomingMoviesHeading}>
+                    <span>Upcoming Movies</span>
+                </div>
+
+                <GridList cols={5} className={classes.gridListUpcomingMovies} >
+                    {this.state.upcomingMovies.map(movie => (
+                        <GridListTile key={"upcoming" + movie.id}>
+                            <img src={movie.poster_url} className="movie-poster" alt={movie.title} />
+                            <GridListTileBar title={movie.title} />
+                        </GridListTile>
                     ))}
-                  </Select>
-                </FormControl>
-                <FormControl variant="standard">
-                  <InputLabel id="artists">Artists</InputLabel>
-                  <Select
-                    labelId="artists"
-                    id="artists-select"
-                    value={artists}
-                    label="Artists"
-                    onChange={onArtistSelect}
-                    multiple
-                    renderValue={(selected) => selected.join(", ")}
-                  >
-                    {artist_list.map((artist) => (
-                      <MenuItem key={artist.id} value={artist.name}>
-                        <Checkbox checked={artists.indexOf(artist.name) > -1} />
-                        <ListItemText primary={artist.name} />
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-                <FormControl>
-                  <TextField
-                    style={customStylesTextArea}
-                    label="Release Date Start"
-                    name="date"
-                    type="date"
-                    value={start_date}
-                    onChange={onStartDateSelect}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </FormControl>
-                <FormControl>
-                  <TextField
-                    style={customStylesTextArea}
-                    label="Release Date End"
-                    name="releaseDateEnd"
-                    type="date"
-                    renderValue={end_date}
-                    onChange={onEndDateSelect}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                </FormControl>
-                <Button
-                  style={{ marginTop: "30px", marginBottom: "10px" }}
-                  color="primary"
-                  variant="contained"
-                  onClick={onApplyFilter}
-                >
-                  APPLY
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </>
-  );
+                </GridList>
+
+                <div className="flex-container">
+                    <div className="left">
+                        <GridList cellHeight={350} cols={4} className={classes.gridListMain}>
+                            {this.state.releasedMovies.map(movie => (
+                                <GridListTile onClick={() => this.movieClickHandler(movie.id)} className="released-movie-grid-item" key={"grid" + movie.id}>
+                                    <img src={movie.poster_url} className="movie-poster" alt={movie.title} />
+                                    <GridListTileBar
+                                        title={movie.title}
+                                        subtitle={<span>Release Date : {new Date(movie.release_date).toDateString()}</span>}
+                                    />
+                                </GridListTile>
+                            ))}
+                        </GridList>
+                    </div>
+                    <div className="right">
+                        <Card>
+                            <CardContent>
+                                <FormControl className={classes.formControl}>
+                                    <Typography className={classes.title} color="textSecondary">
+                                        FIND MOVIES BY :
+                                    </Typography>
+                                </FormControl>
+
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel htmlFor="movieName">Movie Name</InputLabel>
+                                    <Input id="movieName" onChange={this.movieNameChangeHandler} />
+                                </FormControl>
+
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel htmlFor="select-multiple-checkbox">Genres</InputLabel>
+                                    <Select
+                                        multiple
+                                        input={<Input id="select-multiple-checkbox-genre" />}
+                                        renderValue={selected => selected.join(',')}
+                                        value={this.state.genres}
+                                        onChange={this.genreSelectHandler}
+                                    >
+                                        {this.state.genresList.map(genre => (
+                                            <MenuItem key={genre.id} value={genre.genre}>
+                                                <Checkbox checked={this.state.genres.indexOf(genre.genre) > -1} />
+                                                <ListItemText primary={genre.genre} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+
+                                <FormControl className={classes.formControl}>
+                                    <InputLabel htmlFor="select-multiple-checkbox">Artists</InputLabel>
+                                    <Select
+                                        multiple
+                                        input={<Input id="select-multiple-checkbox" />}
+                                        renderValue={selected => selected.join(',')}
+                                        value={this.state.artists}
+                                        onChange={this.artistSelectHandler}
+                                    >
+                                        {this.state.artistsList.map(artist => (
+                                            <MenuItem key={artist.id} value={artist.first_name + " " + artist.last_name}>
+                                                <Checkbox checked={this.state.artists.indexOf(artist.first_name + " " + artist.last_name) > -1} />
+                                                <ListItemText primary={artist.first_name + " " + artist.last_name} />
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+
+                                <FormControl className={classes.formControl}>
+                                    <TextField
+                                        id="releaseDateStart"
+                                        label="Release Date Start"
+                                        type="date"
+                                        defaultValue=""
+                                        InputLabelProps={{ shrink : true }}
+                                        onChange={this.releaseDateStartHandler}
+                                    />
+                                </FormControl>
+
+                                <FormControl className={classes.formControl}>
+                                    <TextField
+                                        id="releaseDateEnd"
+                                        label="Release Date End"
+                                        type="date"
+                                        defaultValue=""
+                                        InputLabelProps={{ shrink : true }}
+                                        onChange={this.releaseDateEndHandler}
+                                    />
+                                </FormControl>
+                                <br /><br />
+                                <FormControl className={classes.formControl}>
+                                    <Button onClick={() => this.filterApplyHandler()} variant="contained" color="primary">
+                                        APPLY
+                                    </Button>
+                                </FormControl>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </div>
+            </div >
+        )
+    }
 }
 
-Home.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
+const styles = theme => ({
+    root : {
+        flexGrow : 1,
+        backgroundColor : theme.palette.background.paper
+    },
+    upcomingMoviesHeading : {
+        textAlign : 'center',
+        background : '#ff9999',
+        padding : '8px',
+        fontSize : '1rem'
+    },
+    gridListUpcomingMovies : {
+        flexWrap : 'nowrap',
+        transform : 'translateZ(0)',
+        width : '100%'
+    },
+    gridListMain : {
+        transform : 'translateZ(0)',
+        cursor : 'pointer'
+    },
+    formControl : {
+        margin : theme.spacing.unit,
+        minWidth : 240,
+        maxWidth : 240
+    },
+    title : {
+        color : theme.palette.primary.light,
+    }
+});
+
 
 export default withStyles(styles)(Home);

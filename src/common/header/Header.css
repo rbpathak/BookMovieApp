@@ -1,32 +1,32 @@
-.header {
-  background-color: #222;
-  height: 36px;
-  padding: 8px 32px 8px 16px;
+.app-header {
+    background-color: #222;
+    height: 36px;
+    padding: 8px 32px 8px 16px;
 }
-
-.rotate{
-  background-color: #ff7f7f;
-  height: 35px;
-  transform: rotate(180deg);
-  animation: spin 8s linear infinite;
+.login-button {
+    float: right;
 }
-
-@keyframes spin {
-  0% { transform: rotateY(0deg); }
-  100% { transform: rotateY(360deg); }
+.app-logo {
+    animation: app-logo-spin infinite 8s linear;
+    height: 35px;
+    background: #ff7f7f;
 }
-
-.formControl {
-  width: 240px;
+.bookshow-button {
+    float: right;
+    margin-right: 8px;
+}
+.tabs {
+    margin-bottom: 20px;
 }
 .dispNone {
-  display: none;
+    display: none;
 }
-
 .dispBlock {
-  display: block;
+    display: block;
 }
-
 .red {
-  color: red;
+    color: red;
+}
+@keyframes app-logo-spin {
+    from { transform: scaleX(-1); }
 }

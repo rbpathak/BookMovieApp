@@ -18,12 +18,12 @@ import green from "@material-ui/core/colors/green";
 import { Link } from "react-router-dom";
 
 const styles = (theme) => ({
-  close: {
-    width: theme.spacing.unit * 4,
-    height: theme.spacing.unit * 4,
+  close : {
+    width : theme.spacing.unit * 4,
+    height : theme.spacing.unit * 4,
   },
-  success: {
-    color: green[600],
+  success : {
+    color : green[600],
   },
 });
 
@@ -44,19 +44,19 @@ const Confirmation = (props) => {
 
   const confirmBookingHandler = () => {
     let data = JSON.stringify({
-      coupon_code: couponCode,
-      show_id: props.location.bookingSummary.showId,
-      tickets: [props.location.bookingSummary.tickets.toString()],
+      coupon_code : couponCode,
+      show_id : props.location.bookingSummary.showId,
+      tickets : [props.location.bookingSummary.tickets.toString()],
     });
 
     fetch(props.baseUrl + "bookings", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-cache",
-        Authorization: "Bearer " + sessionStorage.getItem("access-token"),
+      method : "POST",
+      headers : {
+        "Content-Type" : "application/json",
+        "Cache-Control" : "no-cache",
+        Authorization : "Bearer " + sessionStorage.getItem("access-token"),
       },
-      body: data,
+      body : data,
     })
       .then((response) => response.json())
       .then((data) => {
@@ -76,11 +76,11 @@ const Confirmation = (props) => {
 
   const couponApplyHandler = () => {
     fetch(props.baseUrl + "movies/" + props.match.params.id, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-cache",
-        Authorization: "Bearer " + sessionStorage.getItem("access-token"),
+      method : "GET",
+      headers : {
+        "Content-Type" : "application/json",
+        "Cache-Control" : "no-cache",
+        Authorization : "Bearer " + sessionStorage.getItem("access-token"),
       },
     })
       .then((response) => response.json())
@@ -118,7 +118,7 @@ const Confirmation = (props) => {
 
               <div className="coupon-container">
                 <div className="confirmLeft">
-                  <Typography>Location:</Typography>
+                  <Typography>Location :</Typography>
                 </div>
                 <div>
                   <Typography>
@@ -130,7 +130,7 @@ const Confirmation = (props) => {
 
               <div className="coupon-container">
                 <div className="confirmLeft">
-                  <Typography>Theatre:</Typography>
+                  <Typography>Theatre :</Typography>
                 </div>
                 <div>
                   <Typography>
@@ -142,7 +142,7 @@ const Confirmation = (props) => {
 
               <div className="coupon-container">
                 <div className="confirmLeft">
-                  <Typography>Language:</Typography>
+                  <Typography>Language :</Typography>
                 </div>
                 <div>
                   <Typography>
@@ -154,7 +154,7 @@ const Confirmation = (props) => {
 
               <div className="coupon-container">
                 <div className="confirmLeft">
-                  <Typography>Show Date:</Typography>
+                  <Typography>Show Date :</Typography>
                 </div>
                 <div>
                   <Typography>
@@ -166,7 +166,7 @@ const Confirmation = (props) => {
 
               <div className="coupon-container">
                 <div className="confirmLeft">
-                  <Typography>Tickets:</Typography>
+                  <Typography>Tickets :</Typography>
                 </div>
                 <div>
                   <Typography>
@@ -178,7 +178,7 @@ const Confirmation = (props) => {
 
               <div className="coupon-container">
                 <div className="confirmLeft">
-                  <Typography>Unit Price:</Typography>
+                  <Typography>Unit Price :</Typography>
                 </div>
                 <div>
                   <Typography>
@@ -212,7 +212,7 @@ const Confirmation = (props) => {
 
               <div className="coupon-container">
                 <div className="confirmLeft">
-                  <span className="bold">Total Price:</span>
+                  <span className="bold">Total Price :</span>
                 </div>
                 <div>{parseInt(totalPrice, 10)}</div>
               </div>
@@ -232,8 +232,8 @@ const Confirmation = (props) => {
 
       <Snackbar
         anchorOrigin={{
-          vertical: "top",
-          horizontal: "center",
+          vertical : "top",
+          horizontal : "center",
         }}
         className="snackbar"
         open={open}
@@ -265,7 +265,7 @@ const Confirmation = (props) => {
 };
 
 Confirmation.propTypes = {
-  classes: PropTypes.object.isRequired,
+  classes : PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Confirmation);

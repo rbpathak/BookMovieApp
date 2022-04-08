@@ -1,148 +1,181 @@
-import React, { useEffect, useState, setState } from "react";
-import Header from "../../common/header/Header";
-import {
-  Typography,
-  ImageList,
-  ImageListItem,
-  ImageListItemBar,
-} from "@material-ui/core";
-import "./Details.css";
-import ReactPlayer from "react-player";
-import StarBorderIcon from "@material-ui/icons/StarBorder";
-import Rating from "@material-ui/lab/Rating";
-import { withStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
-import moment from "moment";
+import React, { Component } from 'react';
+import Header from '../../common/header/Header';
+import Typography from '@material-ui/core/Typography';
+import './Details.css';
+import YouTube from 'react-youtube';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import StarBorderIcon from '@material-ui/icons/StarBorder';
+import { Link } from 'react-router-dom';
 
-const UseStyles = withStyles({
-  iconFilled: {
-    color: "yellow",
-  },
-})(Rating);
+class Details extends Component {
+    constructor() {
+        super();
+        this.state = {
+            movie : {
+                genres : [],
+                trailer_url : "",
+                artists : []
+            },
+            starIcons : [{
+                id : 1,
+                stateId : "star1",
+                color : "black"
+            },
+            {
+                id : 2,
+                stateId : "star2",
+                color : "black"
+            },
+            {
+                id : 3,
+                stateId : "star3",
+                color : "black"
+            },
+            {
+                id : 4,
+                stateId : "star4",
+                color : "black"
+            },
+            {
+                id : 5,
+                stateId : "star5",
+                color : "black"
+            }]
+        }
+    }
 
-export default function Details(props) {
-  const [movie_detail, set_movie_detail] = useState({
-    poster_url: "",
-    artists: [],
-    title: "",
-    genres: [],
-    duration: 0,
-    release_date: "",
-    rating: 0,
-    storyline: "",
-    id: "",
-    wiki_url: "",
-    trailer_url: "",
-    censor_board_rating: "",
-  });
+    componentWillMount() {
+        let that = this;
+        let dataMovie = null;
+        let xhrMovie = new XMLHttpRequest();
+        xhrMovie.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({
+                    movie : JSON.parse(this.responseText)
+                });
+            }
+        });
 
-  async function data() {
-    const rawData = await fetch(
-      props.baseUrl + "movies/" + props.match.params.id,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache",
-        },
-      }
-    );
-    const data = await rawData.json();
-    set_movie_detail(data);
-  }
+        xhrMovie.open("GET", this.props.baseUrl + "movies/" + this.props.match.params.id);
+        xhrMovie.setRequestHeader("Cache-Control", "no-cache");
+        xhrMovie.send(dataMovie);
+    }
 
-  const handleRatingChange = (value) => {
-    console.log(value);
-    set_movie_detail({ ...movie_detail, rating: value * 2 });
-  };
+    artistClickHandler = (url) => {
+        window.location = url;
+    }
 
-  useEffect(() => {
-    data();
-  }, []);
+    starClickHandler = (id) => {
+        let starIconList = [];
+        for (let star of this.state.starIcons) {
+            let starNode = star;
+            if (star.id <= id) {
+                starNode.color = "yellow"
+            }
+            else {
+                starNode.color = "black";
 
-  return (
-    <>
-      <Header
-        baseUrl={props.baseUrl}
-        movieid={movie_detail.id}
-        detailButton
-      ></Header>
-      <Typography
-        style={{ margin: "8px 0 0 24px", height: "24px" }}
-        component="button"
-        variant="button"
-        className="backBtn"
-        color="primary"
-      >
-        <Link to="/" style={{ textDecoration: "none" }}>
-          &lt; Back to Home
-        </Link>
-      </Typography>
-      <div className="container">
-        <div className="column1">
-          <img className="poster" src={movie_detail.poster_url}></img>
-        </div>
-        <div className="column2">
-          <Typography variant="h4">
-            {movie_detail.title}
-          </Typography>
-          <Typography>
-            <b>Genre: </b>
-            {movie_detail.genres.join(", ")}
-          </Typography>
-          <Typography>
-            <b>Duration: </b>
-            {movie_detail.duration}
-          </Typography>
-          <Typography>
-            <b>Release Date: </b>
-            {moment(movie_detail.release_date).format("ddd MMM DD YYYY")}
-          </Typography>
-          <Typography>
-            <b>Rating: </b>
-            {movie_detail.rating}
-          </Typography>
-          <br />
-          <Typography>
-            <b>Plot: </b>
-            <a href={movie_detail.wiki_url}>(Wiki Link)</a>
-            {" " + movie_detail.storyline}
-          </Typography>
-          <br />
-          <Typography>
-            <b>Trailer: </b>
-            <br />
-            <ReactPlayer url={movie_detail.trailer_url} controls={true} />
-          </Typography>
-        </div>
-        <div className="column3">
-          <Typography>
-            <b>Rate this movie</b>
-          </Typography>
-          <UseStyles
-            name="rating"
-            value={movie_detail.rating / 2}
-            max={5}
-            onChange={(e, newValue) => {
-              handleRatingChange(newValue);
-            }}
-            icon={<StarBorderIcon fontSize="inherit" />}
-          />
-          <Typography style={{ margin: "16px 0" }}>
-            <b>Artists:</b>
-          </Typography>
-          <ImageList cellWidth={100} cols={2}>
-            {movie_detail.artists.map((artist) => (
-              <ImageListItem key={artist.id}>
-                <img src={artist.profile_url} />
-                <ImageListItemBar
-                  title={artist.first_name + " " + artist.last_name}
-                />
-              </ImageListItem>
-            ))}
-          </ImageList>
-        </div>
-      </div>
-    </>
-  );
+            }
+            starIconList.push(starNode);
+        }
+        this.setState({ starIcons : starIconList });
+    }
+
+    render() {
+        let movie = this.state.movie;
+        const opts = {
+            height : '300',
+            width : '700',
+            playerVars : {
+                autoplay : 1
+            }
+        }
+        return (
+            <div className="details">
+                <Header id={this.props.match.params.id} baseUrl={this.props.baseUrl} showBookShowButton="true" />
+                <div className="back">
+                    <Typography>
+                        <Link to="/">  &#60; Back to Home</Link>
+                    </Typography>
+                </div>
+                <div className="flex-containerDetails">
+                    <div className="leftDetails">
+                        <img src={movie.poster_url} alt={movie.title} />
+                    </div>
+
+                    <div className="middleDetails">
+                        <div>
+                            <Typography variant="headline" component="h2">{movie.title} </Typography>
+                        </div>
+                        <br />
+                        <div>
+                            <Typography>
+                                <span className="bold">Genres : </span> {movie.genres.join(', ')}
+                            </Typography>
+                        </div>
+                        <div>
+                            <Typography><span className="bold">Duration :</span> {movie.duration} </Typography>
+                        </div>
+                        <div>
+                            <Typography><span className="bold">Release Date :</span> {new Date(movie.release_date).toDateString()} </Typography>
+                        </div>
+                        <div>
+                            <Typography><span className="bold"> Rating :</span> {movie.critics_rating}  </Typography>
+                        </div>
+                        <div className="marginTop16">
+                            <Typography><span className="bold">Plot :</span> <a href={movie.wiki_url}>(Wiki Link)</a> {movie.storyline} </Typography>
+                        </div>
+                        <div className="trailerContainer">
+                            <Typography>
+                                <span className="bold">Trailer :</span>
+                            </Typography>
+                            <YouTube
+                                videoId={movie.trailer_url.split("?v=")[1]}
+                                opts={opts}
+                                onReady={this._onReady}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="rightDetails">
+                        <Typography>
+                            <span className="bold">Rate this movie : </span>
+                        </Typography>
+                        {this.state.starIcons.map(star => (
+                            <StarBorderIcon
+                                className={star.color}
+                                key={"star" + star.id}
+                                onClick={() => this.starClickHandler(star.id)}
+                            />
+                        ))}
+
+                        <div className="bold marginBottom16 marginTop16">
+                            <Typography>
+                                <span className="bold">Artists :</span>
+                            </Typography>
+                        </div>
+                        <div className="paddingRight">
+                            <GridList cellHeight={160} cols={2}>
+                                {movie.artists != null && movie.artists.map(artist => (
+                                    <GridListTile
+                                        className="gridTile"
+                                        onClick={() => this.artistClickHandler(artist.wiki_url)}
+                                        key={artist.id}>
+                                        <img src={artist.profile_url} alt={artist.first_name + " " + artist.last_name} />
+                                        <GridListTileBar
+                                            title={artist.first_name + " " + artist.last_name}
+                                        />
+                                    </GridListTile>
+                                ))}
+                            </GridList>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 }
+
+export default Details;
